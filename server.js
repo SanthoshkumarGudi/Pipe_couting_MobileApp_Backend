@@ -3,8 +3,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const authRoutes = require("./routes/auth");
+const cors = require("cors");
 
 const app = express();
+
+/* ✅ ENABLE CORS FIRST */
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
+  credentials: true
+}));
 
 /* ✅ BODY PARSER MUST COME FIRST */
 app.use(express.json());

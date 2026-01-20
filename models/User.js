@@ -9,6 +9,8 @@ const UserSchema = new mongoose.Schema({
 
   verificationToken: String,
   verificationTokenExpiry: Date,
+  resetPasswordToken: String,
+resetPasswordExpiry: Date,
 });
 
 module.exports = mongoose.model("User", UserSchema);

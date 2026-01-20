@@ -6,6 +6,7 @@ const User = require("../models/User");
 const crypto = require("crypto");
 
 const { sendVerificationEmail } = require("../utils/sendEmail");
+const { sendResetPasswordEmail } = require("../utils/sendEmail");
 
 router.post("/register", async (req, res) => {
   try {
@@ -26,7 +27,9 @@ router.post("/register", async (req, res) => {
       email,
       password: hashed,
       verificationToken: token,
-      verificationTokenExpiry: Date.now() + 24 * 60 * 60 * 1000,
+      // verificationTokenExpiry: Date.now() + 24 * 60 * 60 * 1000,
+            verificationTokenExpiry: Date.now() +  60 * 1000,
+
     });
 
     await sendVerificationEmail(email, token);
@@ -42,6 +45,8 @@ router.post("/register", async (req, res) => {
 
 
 router.post("/login", async (req, res) => {
+  console.log("inside login route");
+  
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -79,6 +84,78 @@ router.get("/verify-email/:token", async (req, res) => {
   await user.save();
 
   res.send("Email verified successfully. You can now login.");
+});
+
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Always return success (security)
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const token = crypto.randomBytes(32).toString("hex");
+
+      user.resetPasswordToken = token;
+      user.resetPasswordExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
+      await user.save();
+
+      await sendResetPasswordEmail(email, token);
+    }
+
+    res.json({
+      message: "If the email exists, a reset link has been sent.",
+    });
+  } catch (err) {
+    console.error("FORGOT PASSWORD ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/reset-password/:token", async (req, res) => {
+  console.log("inside reset password API");
+
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ error: "Password required" });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save();
+
+    return res.json({ message: "Password reset successful" });
+  } catch (err) {
+    console.error("RESET PASSWORD ERROR:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+router.get("/reset-password-redirect", (req, res) => {
+  console.log("inside redirect");
+  
+  const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).send("Invalid reset link");
+  }
+
+  return res.redirect(`myapp://reset-password/${token}`);
+  
 });
 
 
