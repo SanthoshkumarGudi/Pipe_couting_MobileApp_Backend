@@ -9,13 +9,16 @@ const { sendVerificationEmail } = require("../utils/sendEmail");
 const { sendResetPasswordEmail } = require("../utils/sendEmail");
 
 router.post("/register", async (req, res) => {
+  console.log("inside register flow");
+  
   try {
-    const { email, password } = req.body;
+    const { name, email, password,phone } = req.body;
 
     if (!email || !password)
       return res.status(400).json({ error: "Missing fields" });
 
     const exists = await User.findOne({ email });
+    
     if (exists)
       return res.status(409).json({ error: "Email already registered" });
 
@@ -23,14 +26,14 @@ router.post("/register", async (req, res) => {
 
     const token = crypto.randomBytes(32).toString("hex");
 
-    await User.create({
-      email,
-      password: hashed,
-      verificationToken: token,
-      // verificationTokenExpiry: Date.now() + 24 * 60 * 60 * 1000,
-            verificationTokenExpiry: Date.now() +  60 * 1000,
-
-    });
+   await User.create({
+  name:name, // new
+  email:email,
+  password: hashed,
+  phone:phone, // new
+  verificationToken: token,
+verificationTokenExpiry: Date.now() + 15 * 60 * 1000,
+});
 
     await sendVerificationEmail(email, token);
 
@@ -69,6 +72,7 @@ router.post("/login", async (req, res) => {
 
 router.get("/verify-email/:token", async (req, res) => {
   const { token } = req.params;
+console.log("inside verify email");
 
   const user = await User.findOne({
     verificationToken: token,
@@ -154,7 +158,7 @@ router.get("/reset-password-redirect", (req, res) => {
     return res.status(400).send("Invalid reset link");
   }
 
-  return res.redirect(`myapp://reset-password/${token}`);
+  return res.redirect(`lecca://reset-password/${token}`);
   
 });
 
