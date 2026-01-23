@@ -118,7 +118,6 @@ router.post("/forgot-password", async (req, res) => {
 
 router.post("/reset-password/:token", async (req, res) => {
   console.log("inside reset password API");
-  console.log("inside reset password API");
 
   try {
     const { token } = req.params;
