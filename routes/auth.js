@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
   if (!match)
     return res.status(400).json({ error: "Invalid password" });
 
-  const token = jwt.sign({ id: user._id }, "secret", { expiresIn: "7d" });
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
   res.json({ token });
 });
 
@@ -157,7 +157,8 @@ router.get("/reset-password-redirect", (req, res) => {
   if (!token) {
     return res.status(400).send("Invalid reset link");
   }
-
+// Add this header to skip ngrok warning page
+  res.setHeader("ngrok-skip-browser-warning", "69420");  // any value works
   return res.redirect(`lecca://reset-password/${token}`);
   
 });
