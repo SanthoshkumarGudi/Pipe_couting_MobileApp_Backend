@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 const sendVerificationEmail = async (email, token) => {
   const link = `${process.env.BACKEND_URL}/api/auth/verify-email/${token}`;
     // const link = `${process.env.BACKEND_URL}api/auth/verify-email/${token}`;
-
+console.log("inside verification email");
 
   await transporter.sendMail({
     from: "Your App <no-reply@yourapp.com>",
@@ -32,6 +32,7 @@ const sendVerificationEmail = async (email, token) => {
 
 const sendResetPasswordEmail = async (email, token) => {
   const resetLink = `${process.env.BACKEND_URL}/api/auth/reset-password-redirect?token=${token}`;
+  console.log("inside reset email");
   
   // Better HTML – make button look nice and clearly clickable
   await transporter.sendMail({
