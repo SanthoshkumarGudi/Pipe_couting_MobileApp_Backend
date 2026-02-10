@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (email, token) => {
-  const link = `http://localhost:5000/api/auth/verify-email/${token}`;
+  const link = `${process.env.BACKEND_URL}/api/auth/verify-email/${token}`;
     // const link = `${process.env.BACKEND_URL}api/auth/verify-email/${token}`;
 
 
