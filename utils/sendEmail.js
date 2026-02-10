@@ -2,10 +2,15 @@ const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  port:587,
+  secure:false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  connectionTimeout: 60000,  // 60 seconds
+  greetingTimeout: 60000,
+  socketTimeout: 60000,
 });
 
 const sendVerificationEmail = async (email, token) => {
