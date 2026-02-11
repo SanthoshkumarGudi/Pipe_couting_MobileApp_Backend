@@ -96,8 +96,11 @@ router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
 
+
     // Always return success (security)
     const user = await User.findOne({ email });
+    console.log("Inside fprgot password", user);
+    
 
     if (user) {
       const token = crypto.randomBytes(32).toString("hex");
