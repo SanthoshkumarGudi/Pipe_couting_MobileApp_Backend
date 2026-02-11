@@ -32,7 +32,7 @@ console.log("inside verification email");
 
 const sendResetPasswordEmail = async (email, token) => {
   const resetLink = `${process.env.BACKEND_URL}/api/auth/reset-password-redirect?token=${token}`;
-  console.log("inside reset email");
+  console.log("inside reset email and the token is ", token);
   
   // Better HTML – make button look nice and clearly clickable
   await transporter.sendMail({
