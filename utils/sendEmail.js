@@ -2,16 +2,25 @@ const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  port:587,
-  secure:false,
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  connectionTimeout: 60000,  // 60 seconds
+  connectionTimeout: 60000,
   greetingTimeout: 60000,
   socketTimeout: 60000,
 });
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("SMTP ERROR:", error);
+  } else {
+    console.log("SMTP ready");
+  }
+});
+
 
 const sendVerificationEmail = async (email, token) => {
   const link = `${process.env.BACKEND_URL}/api/auth/verify-email/${token}`;
