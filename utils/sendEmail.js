@@ -1,52 +1,33 @@
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 60000,
-  greetingTimeout: 60000,
-  socketTimeout: 60000,
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("SMTP ERROR:", error);
-  } else {
-    console.log("SMTP ready");
-  }
-});
-
+// Set API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendVerificationEmail = async (email, token) => {
   const link = `${process.env.BACKEND_URL}/api/auth/verify-email/${token}`;
-    // const link = `${process.env.BACKEND_URL}api/auth/verify-email/${token}`;
-console.log("inside verification email");
+  console.log("inside verification email");
 
-  await transporter.sendMail({
-    from: "Your App <no-reply@yourapp.com>",
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER, // must be verified sender
     subject: "Verify your email",
     html: `
       <h3>Email Verification</h3>
       <p>Click the link below to verify your email:</p>
       <a href="${link}">${link}</a>
     `,
-  });
+  };
+
+  await sgMail.send(msg);
 };
 
 const sendResetPasswordEmail = async (email, token) => {
   const resetLink = `${process.env.BACKEND_URL}/api/auth/reset-password-redirect?token=${token}`;
   console.log("inside reset email and the token is ", token);
-  
-  // Better HTML – make button look nice and clearly clickable
-  await transporter.sendMail({
-    from: `"Your App Name" <${process.env.EMAIL_USER}>`,
+
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER,
     subject: "Reset Your Password",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
@@ -67,7 +48,9 @@ const sendResetPasswordEmail = async (email, token) => {
         </p>
       </div>
     `,
-  });
+  };
+
+  await sgMail.send(msg);
 };
 
-module.exports = { sendVerificationEmail, sendResetPasswordEmail};
+module.exports = { sendVerificationEmail, sendResetPasswordEmail };
