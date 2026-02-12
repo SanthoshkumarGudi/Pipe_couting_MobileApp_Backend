@@ -10,15 +10,15 @@ const { sendResetPasswordEmail } = require("../utils/sendEmail");
 
 router.post("/register", async (req, res) => {
   console.log("inside register flow");
-  
+
   try {
-    const { name, email, password,phone } = req.body;
+    const { name, email, password, phone } = req.body;
 
     if (!email || !password)
       return res.status(400).json({ error: "Missing fields" });
 
     const exists = await User.findOne({ email });
-    
+
     if (exists)
       return res.status(409).json({ error: "Email already registered" });
 
@@ -26,14 +26,14 @@ router.post("/register", async (req, res) => {
 
     const token = crypto.randomBytes(32).toString("hex");
 
-   await User.create({
-  name:name, // new
-  email:email,
-  password: hashed,
-  phone:phone, // new
-  verificationToken: token,
-verificationTokenExpiry: Date.now() + 15 * 60 * 1000,
-});
+    await User.create({
+      name: name, // new
+      email: email,
+      password: hashed,
+      phone: phone, // new
+      verificationToken: token,
+      verificationTokenExpiry: Date.now() + 15 * 60 * 1000,
+    });
 
     await sendVerificationEmail(email, token);
 
@@ -45,16 +45,13 @@ verificationTokenExpiry: Date.now() + 15 * 60 * 1000,
   }
 });
 
-
-
 router.post("/login", async (req, res) => {
   console.log("inside login route");
-  
+
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user)
-    return res.status(400).json({ error: "User not found" });
+  if (!user) return res.status(400).json({ error: "User not found" });
 
   if (!user.isVerified)
     return res.status(403).json({
@@ -62,19 +59,19 @@ router.post("/login", async (req, res) => {
     });
 
   const match = await bcrypt.compare(password, user.password);
-  if (!match)
-    return res.status(400).json({ error: "Invalid password" });
+  if (!match) return res.status(400).json({ error: "Invalid password" });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
   console.log("toke  is", token);
-  
+
   res.json({ token });
 });
 
-
 router.get("/verify-email/:token", async (req, res) => {
   const { token } = req.params;
-console.log("inside verify email");
+  console.log("inside verify email");
 
   const user = await User.findOne({
     verificationToken: token,
@@ -96,11 +93,9 @@ router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
 
-
     // Always return success (security)
     const user = await User.findOne({ email });
-    console.log("Inside fprgot password, the user object has", user);
-    
+    console.log("Inside forgot password, the user object has", user);
 
     if (user) {
       const token = crypto.randomBytes(32).toString("hex");
@@ -126,8 +121,8 @@ router.post("/reset-password/:token", async (req, res) => {
 
   try {
     const { token } = req.params;
-    console.log("token is ",token);
-    
+    console.log("token is ", token);
+
     const { password } = req.body;
 
     if (!password) {
@@ -155,20 +150,17 @@ router.post("/reset-password/:token", async (req, res) => {
   }
 });
 
-
 router.get("/reset-password-redirect", (req, res) => {
   console.log("inside redirect");
-  
+
   const { token } = req.query;
 
   if (!token) {
     return res.status(400).send("Invalid reset link");
   }
-// Add this header to skip ngrok warning page
-  res.setHeader("ngrok-skip-browser-warning", "69420");  // any value works
+  // Add this header to skip ngrok warning page
+  res.setHeader("ngrok-skip-browser-warning", "69420"); // any value works
   return res.redirect(`lecca://reset-password/${token}`);
-  
 });
-
 
 module.exports = router;
