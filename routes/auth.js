@@ -116,39 +116,22 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-router.post("/reset-password/:token", async (req, res) => {
-  console.log("inside reset password API");
+router.get("/reset-password/:token", (req, res) => {
+  const { token } = req.params;
 
-  try {
-    const { token } = req.params;
-    console.log("token is ", token);
-
-    const { password } = req.body;
-
-    if (!password) {
-      return res.status(400).json({ error: "Password required" });
-    }
-
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpiry: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      return res.status(400).json({ error: "Invalid or expired token" });
-    }
-
-    user.password = await bcrypt.hash(password, 10);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpiry = undefined;
-    await user.save();
-
-    return res.json({ message: "Password reset successful" });
-  } catch (err) {
-    console.error("RESET PASSWORD ERROR:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
+  res.send(`
+    <html>
+      <body>
+        <h2>Reset Password</h2>
+        <form method="POST" action="/api/auth/reset-password/${token}">
+          <input type="password" name="password" placeholder="New Password" required />
+          <button type="submit">Reset Password</button>
+        </form>
+      </body>
+    </html>
+  `);
 });
+
 
 router.get("/reset-password-redirect", (req, res) => {
   console.log("inside redirect");
