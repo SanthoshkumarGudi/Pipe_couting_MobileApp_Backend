@@ -23,7 +23,9 @@ const sendVerificationEmail = async (email, token) => {
 
 const sendResetPasswordEmail = async (email, token) => {
   // const resetLink = `${process.env.BACKEND_URL}/api/auth/reset-password-redirect?token=${token}`;
-    const resetLink = `${process.env.BACKEND_URL}/api/auth/reset-password/${token}`;
+    // const resetLink = `${process.env.BACKEND_URL}/api/auth/reset-password/${token}`;
+    const resetLink = `http://localhost:8081/auth/reset-password/${token}`;
+
 
   console.log("inside reset email and the token is ", token);
 
