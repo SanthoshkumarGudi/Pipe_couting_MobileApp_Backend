@@ -50,7 +50,15 @@ const sendResetPasswordEmail = async (email, token) => {
     `,
   };
 
-  await sgMail.send(msg);
+  await sgMail.send(msg)
+  .then(() => {
+    console.log("Email sent successfully");
+  })
+  .catch((error) => {
+    console.error("SendGrid Error:");
+    console.error(error.response?.body || error);
+  });
+
 };
 
 module.exports = { sendVerificationEmail, sendResetPasswordEmail };

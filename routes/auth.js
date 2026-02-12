@@ -99,7 +99,7 @@ router.post("/forgot-password", async (req, res) => {
 
     // Always return success (security)
     const user = await User.findOne({ email });
-    console.log("Inside fprgot password", user);
+    console.log("Inside fprgot password, the user object has", user);
     
 
     if (user) {
