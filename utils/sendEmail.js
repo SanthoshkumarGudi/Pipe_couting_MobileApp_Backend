@@ -4,8 +4,8 @@ const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendVerificationEmail = async (email, token) => {
-  // const link = `${process.env.BACKEND_URL}/api/auth/verify-email/${token}`;
-      const link = `http://localhost:8081/auth/verify-email/${token}`;
+  const link = `${process.env.BACKEND_URL}/api/auth/verify-email/${token}`;
+      // const link = `http://localhost:8081/auth/verify-email/${token}`;
 
   console.log("inside verification email");
 
