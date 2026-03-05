@@ -18,6 +18,7 @@ app.use(cors({
 
 /* ✅ BODY PARSER MUST COME FIRST */
 app.use(express.json());
+app.use("/images", express.static("public/images"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/templates", templateRoutes);
