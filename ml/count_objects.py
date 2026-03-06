@@ -4,8 +4,11 @@ import json
 from ultralytics import YOLO
 
 
+BASE_DIR = os.path.dirname(__file__)
+MODEL_PATH = os.path.join(BASE_DIR, "models", "best.pt")
+
 # Load a lightweight pre-trained model (downloads automatically first time)
-model = YOLO("/home/santhosh/Santhosh/reactNative/mobile application 2/backend/ml/models/best(1).pt")  # nano version = fast, good enough for prototype
+model = YOLO(MODEL_PATH)  # nano version = fast, good enough for prototype
 
 # Get arguments from Node.js
 if len(sys.argv) < 3:

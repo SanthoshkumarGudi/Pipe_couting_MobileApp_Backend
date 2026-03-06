@@ -7,6 +7,7 @@ const crypto = require("crypto");
 
 const { sendVerificationEmail } = require("../utils/sendEmail");
 const { sendResetPasswordEmail } = require("../utils/sendEmail");
+const { error } = require("console");
 
 router.post("/register", async (req, res) => {
   console.log("inside register flow");
@@ -67,6 +68,18 @@ router.post("/login", async (req, res) => {
   console.log("toke  is", token);
 
   res.json({ token });
+});
+
+router.get("/users", async (req, res) => {
+  let users;
+
+  try {
+    users = await User.find().sort({ name: 1 });
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 router.get("/verify-email/:token", async (req, res) => {
@@ -143,7 +156,6 @@ router.post("/reset-password/:token", async (req, res) => {
     user.resetPasswordExpiry = undefined;
     await user.save();
     console.log("password reset successful");
-    
 
     return res.json({ message: "Password reset successful" });
   } catch (err) {
@@ -151,7 +163,6 @@ router.post("/reset-password/:token", async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 });
-
 
 router.get("/reset-password-redirect", (req, res) => {
   console.log("inside redirect");
