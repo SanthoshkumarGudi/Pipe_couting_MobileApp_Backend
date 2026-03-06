@@ -2,6 +2,7 @@
 import sys
 import json
 from ultralytics import YOLO
+import os
 
 
 BASE_DIR = os.path.dirname(__file__)
