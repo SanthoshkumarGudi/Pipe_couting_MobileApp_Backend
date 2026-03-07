@@ -22,4 +22,32 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.post("/create", async (req, res) => {
+
+  const {name, imageUrl, comingSoon} = req.body;
+try{
+  if(!name || !comingSoon){
+    return res.status(400).json({error:"Name and Coming Soon are missing"});
+  }
+
+  const exists= await Template.findOne({
+    name:name
+  })
+  if(exists){
+    return res.status(400).json({error:"Tempolate with this name already exists"});
+  }
+
+  const template= new Template({
+    name:name,
+    image:imageUrl || null,
+    comingSoon:comingSoon
+  })
+
+  await template.save();
+res.status(201).json({message:"Template created successfully", template});
+}catch(err){
+  res.status(500).json({ error: "Server error" });
+}
+});
+
 module.exports = router;
