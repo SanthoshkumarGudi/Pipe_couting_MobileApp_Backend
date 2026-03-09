@@ -13,7 +13,8 @@ const app = express();
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "OPTIONS"],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 /* ✅ BODY PARSER MUST COME FIRST */

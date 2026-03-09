@@ -26,6 +26,8 @@ router.post("/register", async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     const token = crypto.randomBytes(32).toString("hex");
+    console.log("crypto generated token is ", token);
+    
 
     await User.create({
       name: name, // new
@@ -63,7 +65,7 @@ router.post("/login", async (req, res) => {
   if (!match) return res.status(400).json({ error: "Invalid password" });
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: "55s",
   });
   console.log("token  is", token);
 
