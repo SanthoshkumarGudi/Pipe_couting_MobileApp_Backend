@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const { sendVerificationEmail } = require("../utils/sendEmail");
 const { sendResetPasswordEmail } = require("../utils/sendEmail");
 const { error } = require("console");
+const authMiddleware = require("../middleware/authMiddleware");
 
 router.post("/register", async (req, res) => {
   console.log("inside register flow");
@@ -26,8 +27,9 @@ router.post("/register", async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     const token = crypto.randomBytes(32).toString("hex");
+    const token2 = crypto.randomBytes(36).toString("hex");
     console.log("crypto generated token is ", token);
-    
+    console.log("crypto generated token2 is ", token2);
 
     await User.create({
       name: name, // new
@@ -35,6 +37,7 @@ router.post("/register", async (req, res) => {
       password: hashed,
       phone: phone, // new
       verificationToken: token,
+      apiToken: token2,
       verificationTokenExpiry: Date.now() + 15 * 60 * 1000,
     });
 
@@ -50,7 +53,24 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   console.log("inside login route");
+  // extracting token from header for testing auth middleware
+  const authHeader = req.headers.authorization;
+  console.log("auth header is ", authHeader);
 
+  if (!authHeader) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const parts = authHeader.split(" ");
+
+  if (parts.length !== 2 || parts[0] !== "Bearer") {
+    return res.status(401).json({ error: "Invalid token format" });
+  }
+
+  const token2 = parts[1];
+  console.log("token extracted is ", token2);
+ 
+  // The rest of the login logic remains unchanged
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -69,7 +89,11 @@ router.post("/login", async (req, res) => {
   });
   console.log("token  is", token);
 
-  res.json({ token });
+  // // res.json({ token });
+  // res.json({ "token verified successfully": token2 ,
+  //   "JWT token": token
+  // });
+  res.json({token})
 });
 
 router.get("/users", async (req, res) => {

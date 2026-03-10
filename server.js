@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const templateRoutes = require("./routes/templates");
 const countRouter = require('./routes/count');
+const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 
@@ -24,6 +25,9 @@ app.use("/images", express.static("public/images"));
 app.use("/api/auth", authRoutes);
 app.use("/api/templates", templateRoutes);
 app.use('/api/count', countRouter);
+app.use("/api/protected", authMiddleware, (req, res) => {
+  res.json({ message: "This is a protected route", user: req.user });
+});
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error(err));
