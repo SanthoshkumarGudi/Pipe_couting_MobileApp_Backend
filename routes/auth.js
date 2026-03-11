@@ -54,21 +54,21 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   console.log("inside login route");
   // extracting token from header for testing auth middleware
-  const authHeader = req.headers.authorization;
-  console.log("auth header is ", authHeader);
+  // const authHeader = req.headers.authorization;
+  // console.log("auth header is ", authHeader);
 
-  if (!authHeader) {
-    return res.status(401).json({ error: "No token provided" });
-  }
+  // if (!authHeader) {
+  //   return res.status(401).json({ error: "No token provided" });
+  // }
 
-  const parts = authHeader.split(" ");
+  // const parts = authHeader.split(" ");
 
-  if (parts.length !== 2 || parts[0] !== "Bearer") {
-    return res.status(401).json({ error: "Invalid token format" });
-  }
+  // if (parts.length !== 2 || parts[0] !== "Bearer") {
+  //   return res.status(401).json({ error: "Invalid token format" });
+  // }
 
-  const token2 = parts[1];
-  console.log("token extracted is ", token2);
+  // const token2 = parts[1];
+  // console.log("token extracted is ", token2);
  
   // The rest of the login logic remains unchanged
   const { email, password } = req.body;
